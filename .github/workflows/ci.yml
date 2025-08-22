@@ -60,8 +60,6 @@ jobs:
 
   fx_sanity:
     name: FX sample pipeline
-    if: >-
-      ${!!(github.event_name == 'push' || github.event_name == 'workflow_dispatch' || github.event_name == 'pull_request')}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -102,7 +100,7 @@ jobs:
   changelog_lite:
     name: Changelog (latest merged PR)
     if: >-
-      ${!!(github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.force == true))}
+      ${{ github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.event.inputs.force == 'true') }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
