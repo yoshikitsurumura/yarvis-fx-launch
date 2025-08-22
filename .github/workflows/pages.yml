@@ -3,10 +3,7 @@ name: deploy-pages
 on:
   push:
     branches: [ main ]
-    paths:
-      - 'lp/**'
-      - 'yarvis-fe/**'
-      - '.github/workflows/pages.yml'
+  workflow_dispatch:
 
 permissions:
   contents: read
