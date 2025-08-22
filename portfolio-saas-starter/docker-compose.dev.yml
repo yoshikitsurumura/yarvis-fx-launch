@@ -1,0 +1,28 @@
+version: '3.8'
+services:
+  api:
+    build: ./apps/api
+    command: npm run dev
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+      - DATA_DIR=.data
+    ports:
+      - '3000:3000'
+    volumes:
+      - ./apps/api:/usr/src/app
+      - api_data:/usr/src/app/.data
+  web:
+    build: ./apps/web
+    command: npm run dev -- --host
+    environment:
+      - NODE_ENV=development
+    ports:
+      - '5173:5173'
+    depends_on:
+      - api
+    volumes:
+      - ./apps/web:/usr/src/app
+volumes:
+  api_data: {}
+

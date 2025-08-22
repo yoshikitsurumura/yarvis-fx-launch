@@ -1,0 +1,40 @@
+name: bundle
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'lp/**'
+      - 'yarvis-fe/**'
+      - 'docs/**'
+      - 'scripts/**'
+      - '.github/workflows/**'
+      - 'Makefile'
+      - 'README.md'
+
+jobs:
+  zip:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create windows_bundle.zip
+        run: |
+          python - << 'PY'
+          import os, zipfile
+          paths = ['windows_start_here','lp','yarvis-fe','docs','scripts','.github/workflows','Makefile','README.md']
+          os.makedirs('out', exist_ok=True)
+          with zipfile.ZipFile('out/windows_bundle.zip','w',zipfile.ZIP_DEFLATED) as z:
+              for p in paths:
+                  if os.path.isdir(p):
+                      for root, _, files in os.walk(p):
+                          for f in files:
+                              fp = os.path.join(root,f)
+                              z.write(fp, fp)
+                  elif os.path.isfile(p):
+                      z.write(p, p)
+          PY
+      - name: Upload bundle artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows_bundle
+          path: out/windows_bundle.zip

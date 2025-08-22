@@ -1,0 +1,23 @@
+name: AI PR Checklist
+
+on:
+  pull_request_target:
+    types: [opened]
+
+jobs:
+  comment:
+    if: ${{ vars.CI_ALLOW == 'true' || (github.event_name == 'pull_request_target' && contains(toJson(github.event.pull_request.labels), 'run-ci')) }}
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            const body = `### 開発チェックリスト\n\n- [ ] テスト追加/更新済み（ユニット or 統合）\n- [ ] 型エラーなし（npm run typecheck）\n- [ ] Lint/Format 済み（npm run lint / npm run format）\n- [ ] AGENTS.md/README/docs 更新が必要なら反映\n- [ ] 破壊的変更があれば明記・移行手順記述\n\nAI補助の利用メモ（任意）：\n- 仕様ドラフト: \`npm run ai:spec\`\n- テスト草案: \`npm run ai:tests\`\n- 変更レビュー: ステージ後に \`npm run ai:review\`\n- ドキュメント: \`npm run ai:docs\``;
+            github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              body
+            });

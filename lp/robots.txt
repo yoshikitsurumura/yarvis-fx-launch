@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+
+# サイトマップURLは公開後に実URLへ差し替えてください。
+# Sitemap: https://<your-pages-domain>/sitemap.xml
+

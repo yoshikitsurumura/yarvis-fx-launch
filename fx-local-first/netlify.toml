@@ -1,0 +1,12 @@
+[build]
+# Netlify のビルド対象をモノレポ配下に限定
+base = "portfolio-saas-starter"
+command = "npm install --workspaces && npm run build -w @app/web"
+publish = "apps/web/dist"
+
+[build.environment]
+NODE_VERSION = "20"
+
+[functions]
+directory = "netlify/functions"
+node_bundler = "esbuild"

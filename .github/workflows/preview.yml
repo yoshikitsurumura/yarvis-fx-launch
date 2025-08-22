@@ -1,0 +1,26 @@
+name: preview-artifacts
+
+on:
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'lp/**'
+      - 'yarvis-fe/**'
+      - '.github/workflows/preview.yml'
+
+jobs:
+  bundle:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Zip LP and Yarvis FE
+        run: |
+          mkdir -p out
+          zip -r out/lp.zip lp
+          zip -r out/yarvis-fe.zip yarvis-fe
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: preview-static
+          path: out/
+

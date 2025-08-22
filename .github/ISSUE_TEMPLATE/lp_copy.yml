@@ -1,0 +1,30 @@
+name: LPコピー改善
+description: LPの見出し・本文・CTAなどの文言改善リクエスト
+title: "[LP Copy] 変更案: "
+labels: [lp, copy]
+body:
+  - type: textarea
+    id: current
+    attributes:
+      label: 現在の文言
+      description: 該当セクションの現状コピー（スクショ可）
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: 変更案（A/BのA or B いずれか）
+      description: 1つの要素に絞ってください（見出し or CTA など）
+    validations:
+      required: true
+  - type: input
+    id: metric
+    attributes:
+      label: 期待する効果（KPI）
+      description: 例）フォーム送信率 +10%
+  - type: textarea
+    id: notes
+    attributes:
+      label: 備考
+      description: 参照資料や制約など
+

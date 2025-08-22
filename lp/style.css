@@ -1,0 +1,30 @@
+:root { --bg:#0b132b; --fg:#e0e6f5; --muted:#a5b1d8; --pri:#4cc9f0; --pri-2:#4895ef; --card:#151b38; }
+*{box-sizing:border-box}html,body{margin:0;padding:0}
+body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--fg);line-height:1.6}
+.container{max-width:980px;margin:0 auto;padding:0 16px}
+.header{display:flex;align-items:center;justify-content:space-between;padding:16px 0;position:sticky;top:0;background:linear-gradient(180deg, rgba(11,19,43,.95), rgba(11,19,43,.75));backdrop-filter:saturate(1.2) blur(6px);z-index:10}
+.logo{font-weight:700;letter-spacing:.5px}
+nav a{color:var(--fg);text-decoration:none;margin-left:16px;opacity:.9}
+nav a:hover{opacity:1}
+.hero{padding:64px 0 32px}
+.hero h1{font-size:36px;line-height:1.2;margin:0 0 8px}
+.hero p{color:var(--muted);margin:0 0 16px}
+.cta-group{display:flex;gap:12px;align-items:center;margin-top:8px}
+.note{color:var(--muted)}
+.trust{display:flex;gap:24px;margin-top:24px}
+.kpi strong{font-size:28px;color:var(--pri)}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.card{background:var(--card);border:1px solid #1f2752;border-radius:12px;padding:16px}
+.steps{display:flex;gap:12px;list-style:none;padding:0}
+.steps li{background:#101738;border:1px solid #1f2752;border-radius:999px;padding:8px 12px}
+.muted{color:var(--muted)}.small{font-size:12px}
+.embed{margin-top:12px}
+.diag{margin-top:16px;background:var(--card);border:1px solid #1f2752;border-radius:12px;padding:12px}
+.diag select{width:100%;padding:8px 10px;border-radius:8px;border:1px solid #31407a;background:#0f1634;color:var(--fg);margin-top:6px}
+.footer{display:flex;justify-content:space-between;padding:24px 0;color:var(--muted);border-top:1px solid #1f2752;margin-top:40px}
+.btn{display:inline-block;border-radius:10px;border:1px solid transparent;padding:10px 14px;color:#0b132b;background:#dbeafe;text-decoration:none;font-weight:600}
+.btn.primary{background:linear-gradient(90deg,var(--pri),var(--pri-2));color:#041026}
+.btn.lg{padding:12px 16px}
+.btn.xl{padding:14px 20px;font-size:18px}
+section{padding:24px 0}
+@media (max-width:760px){.grid-3{grid-template-columns:1fr}.hero h1{font-size:30px}.header nav a{margin-left:12px}}

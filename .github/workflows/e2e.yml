@@ -1,0 +1,49 @@
+name: e2e
+
+on:
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'lp/**'
+      - 'yarvis-fe/**'
+      - 'e2e/**'
+      - '.github/workflows/e2e.yml'
+  push:
+    branches: [ main ]
+    paths:
+      - 'lp/**'
+      - 'yarvis-fe/**'
+      - 'e2e/**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Start static server
+        run: |
+          python -m http.server 8000 &
+          echo $! > server.pid
+          sleep 1
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Playwright
+        working-directory: e2e
+        run: |
+          npm install
+          npx playwright install --with-deps chromium
+
+      - name: Run E2E
+        working-directory: e2e
+        run: npm test
+
+      - name: Stop server
+        if: always()
+        run: |
+          kill $(cat server.pid) || true
+

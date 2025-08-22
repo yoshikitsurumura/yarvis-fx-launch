@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>共有リンク | やーびすLP</title>
+    <style>
+      body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;padding:16px;line-height:1.6;background:#0b132b;color:#e0e6f5}
+      .card{background:#131938;border:1px solid #1f2752;border-radius:12px;padding:16px;max-width:840px}
+      input{width:100%;padding:8px 10px;border-radius:8px;border:1px solid #31407a;background:#0f1634;color:#e0e6f5}
+      button{margin-top:8px;padding:8px 12px;border-radius:8px;border:1px solid transparent;background:linear-gradient(90deg,#4cc9f0,#4895ef);color:#041026;font-weight:600}
+      .muted{color:#a5b1d8;font-size:12px}
+      .row{margin:12px 0}
+    </style>
+  </head>
+  <body>
+    <h1>配布リンク（v1 / v2）</h1>
+    <div class="card">
+      <div class="row">
+        <label>v1リンク
+          <input id="v1" readonly>
+        </label>
+        <button onclick="copy('v1')">コピー</button>
+      </div>
+      <div class="row">
+        <label>v2リンク
+          <input id="v2" readonly>
+        </label>
+        <button onclick="copy('v2')">コピー</button>
+      </div>
+      <div class="row">
+        <label>埋め込み（v1）
+          <input id="v1e" readonly>
+        </label>
+        <button onclick="copy('v1e')">コピー</button>
+      </div>
+      <div class="row">
+        <label>埋め込み（v2）
+          <input id="v2e" readonly>
+        </label>
+        <button onclick="copy('v2e')">コピー</button>
+      </div>
+      <p class="muted">ヒント: そのままSNSや関係者に配布できます。</p>
+    </div>
+    <script>
+      (function(){
+        var loc = window.location;
+        var origin = loc.origin;
+        // GitHub PagesではLPがサイトのルートに公開される想定。
+        // ローカルで /lp/ 配下ならベースに /lp を付ける。
+        var hasLp = loc.pathname.indexOf('/lp/') !== -1;
+        var base = hasLp ? origin + '/lp' : origin;
+        var query = 'utm_source=lp&utm_medium=web&utm_campaign=launch';
+        var v1 = base + '/?v=1&' + query;
+        var v2 = base + '/?v=2&' + query;
+        var v1e = v1 + '&embed=1';
+        var v2e = v2 + '&embed=1';
+        document.getElementById('v1').value = v1;
+        document.getElementById('v2').value = v2;
+        document.getElementById('v1e').value = v1e;
+        document.getElementById('v2e').value = v2e;
+      })();
+      function copy(id){
+        var el = document.getElementById(id);
+        el.select();
+        document.execCommand('copy');
+        alert('コピーしました');
+      }
+    </script>
+  </body>
+  </html>
+

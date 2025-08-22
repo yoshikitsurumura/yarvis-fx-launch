@@ -1,0 +1,21 @@
+version: '3.8'
+services:
+  api:
+    build: ./apps/api
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+    volumes:
+      - data:/usr/src/app/.data
+  web:
+    build: ./apps/web
+    ports:
+      - "5173:5173"
+    environment:
+      - NODE_ENV=production
+    depends_on:
+      - api
+volumes:
+  data: {}
+

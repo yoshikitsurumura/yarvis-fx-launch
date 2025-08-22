@@ -1,0 +1,30 @@
+name: E2E
+
+on:
+  pull_request:
+    paths-ignore:
+      - 'docs/**'
+      - '**/*.md'
+      - '.vscode/**'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  e2e:
+    # Allow via repo var or PR label 'run-e2e' (or 'run-ci')
+    if: ${{ vars.E2E_ALLOW == 'true' || (github.event_name == 'pull_request' && (contains(toJson(github.event.pull_request.labels), 'run-e2e') || contains(toJson(github.event.pull_request.labels), 'run-ci'))) }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm install --no-fund --no-audit
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+      - name: Run E2E tests
+        run: npx playwright test

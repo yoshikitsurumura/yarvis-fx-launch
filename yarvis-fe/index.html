@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ヤービス MVP | 業務自動化 体験デモ</title>
+    <meta name="description" content="ヤービス（やーびす）のMVPデモ。代表的な自動化ユースケースを体験し、LPへスムーズに相談導線。" />
+    <meta property="og:title" content="ヤービス MVP | 業務自動化 体験デモ" />
+    <meta property="og:description" content="代表的な自動化ユースケースを体験し、LPへスムーズに相談導線。" />
+    <meta property="og:type" content="website" />
+    <link rel="stylesheet" href="./style.css" />
+    <script defer src="./app.js"></script>
+  </head>
+  <body>
+    <header class="bar">
+      <div class="brand">やーびす MVP</div>
+      <nav>
+        <a id="cta-lp" class="btn" href="../lp/index.html">無料相談</a>
+      </nav>
+    </header>
+
+    <main class="container">
+      <aside class="pane">
+        <input id="search" class="search" placeholder="検索…" />
+        <ul id="list" class="list"></ul>
+      </aside>
+      <section class="content">
+        <div id="detail" class="detail">
+          <h2 class="empty">左の一覧から選択してください</h2>
+        </div>
+      </section>
+    </main>
+
+    <div id="toast" class="toast" hidden></div>
+  </body>
+</html>

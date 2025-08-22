@@ -1,0 +1,26 @@
+name: Feature request
+description: 機能追加・改善の提案
+labels: [enhancement]
+body:
+  - type: input
+    id: title
+    attributes:
+      label: タイトル
+    validations:
+      required: true
+  - type: textarea
+    id: goal
+    attributes:
+      label: 目的
+      description: 何を達成したいか（誰のために、何が変わるか）
+  - type: textarea
+    id: scope
+    attributes:
+      label: スコープ
+      description: やること/やらないこと、影響範囲
+  - type: textarea
+    id: tests
+    attributes:
+      label: テスト観点
+      description: 受け入れ条件、ユースケース、主要エラーケース
+

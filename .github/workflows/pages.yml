@@ -1,0 +1,72 @@
+name: deploy-pages
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'lp/**'
+      - 'yarvis-fe/**'
+      - '.github/workflows/pages.yml'
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prepare public site (LP + Yarvis)
+        run: |
+          mkdir -p public
+          # LP with version info
+          cp -r lp public/
+          echo "commit=${GITHUB_SHA}" > public/lp/version.txt
+          echo "built_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> public/lp/version.txt
+          # Yarvis FE
+          cp -r yarvis-fe public/
+          # Minimal top index to link both
+          cat > public/index.html <<'HTML'
+          <!doctype html>
+          <html lang="ja">
+            <meta charset="utf-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1" />
+            <title>公開物一覧</title>
+            <body style="font-family: system-ui, sans-serif; padding:24px; background:#0b132b; color:#e2e8f0">
+              <h1>公開物一覧</h1>
+              <ul>
+                <li><a style="color:#60a5fa" href="./lp/index.html">LP（やーびす）</a></li>
+                <li><a style="color:#60a5fa" href="./yarvis-fe/index.html">Yarvis MVP</a></li>
+              </ul>
+            </body>
+          </html>
+          HTML
+      - name: Upload static artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: public
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
+      - name: Share A/B links
+        if: always()
+        run: |
+          URL='${{ steps.deployment.outputs.page_url }}'
+          {
+            echo "# LP Published";
+            echo;
+            echo "- v1: ${URL}?v=1&utm_source=lp&utm_medium=web&utm_campaign=launch";
+            echo "- v2: ${URL}?v=2&utm_source=lp&utm_medium=web&utm_campaign=launch";
+          } >> "$GITHUB_STEP_SUMMARY"

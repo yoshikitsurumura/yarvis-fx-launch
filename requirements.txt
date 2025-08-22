@@ -1,0 +1,6 @@
+numpy>=1.24
+pandas>=2.0
+PyYAML>=6.0
+yfinance>=0.2.30
+requests>=2.31
+Flask>=3.0

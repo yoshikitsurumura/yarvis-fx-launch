@@ -1,0 +1,31 @@
+name: Release Checklist
+description: 公開前の最終確認リスト
+title: "[Release] YYYY-MM-DD リリース準備"
+labels: [release]
+body:
+  - type: checkboxes
+    id: lp
+    attributes:
+      label: LPの最終チェック
+      options:
+        - label: lp/config.js にGoogleフォームURLを設定
+        - label: v1/v2リンクでCTAがフォームへ遷移
+        - label: 埋め込み（?embed=1）が表示（必要なら）
+        - label: 価格・事例の文言を確認
+  - type: checkboxes
+    id: gh
+    attributes:
+      label: GitHub設定
+      options:
+        - label: PagesのSourceがGitHub Actions
+        - label: Actionsのdeploy-pagesが成功（Summaryにリンク表示）
+        - label: 必要ならブランチ保護を設定
+  - type: checkboxes
+    id: ops
+    attributes:
+      label: 運用
+      options:
+        - label: 配布リンクを関係者へ共有
+        - label: KPI台帳（送信数）を記録開始
+        - label: 次のA/B要素を1つ決める
+

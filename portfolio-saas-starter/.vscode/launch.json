@@ -1,0 +1,19 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "pwa-chrome",
+      "request": "launch",
+      "name": "Open Vite (web)",
+      "url": "http://localhost:5173"
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Start Dev Servers",
+      "configurations": [],
+      "preLaunchTask": "dev:both"
+    }
+  ]
+}
+

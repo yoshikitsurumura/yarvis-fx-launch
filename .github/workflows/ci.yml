@@ -1,0 +1,163 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+    paths-ignore:
+      - 'docs/**'
+      - 'data/**'
+      - '**.md'
+      - 'portfolio-saas-starter/**'
+  pull_request:
+    branches: [ main ]
+    types: [opened, synchronize, labeled, reopened]
+    paths-ignore:
+      - 'docs/**'
+      - 'data/**'
+      - '**.md'
+  workflow_dispatch:
+    inputs:
+      force:
+        description: 'Force run all jobs'
+        required: false
+        type: boolean
+        default: false
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ci:
+    if: >-
+      ${{ github.event_name == 'workflow_dispatch' && inputs.force == true ||
+          github.event_name == 'push' ||
+          (github.event_name == 'pull_request' &&
+           (contains(join(github.event.pull_request.labels.*.name, ','), 'run-ci') ||
+            contains(join(github.event.pull_request.labels.*.name, ','), 'run-e2e'))) }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: CLI help check
+        run: |
+          export PYTHONPATH=src
+          python -m fxbot.cli --help
+
+  fx_sanity:
+    name: FX sample pipeline
+    if: >-
+      ${!!(github.event_name == 'push' || github.event_name == 'workflow_dispatch' || github.event_name == 'pull_request')}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Run sample backtest and export
+        env:
+          PYTHONPATH: src
+        run: |
+          mkdir -p out/ci
+          python -m fxbot.cli backtest \
+            --csv data/sample_USDJPY_1h.csv \
+            --pair USDJPY \
+            --config config/config.yaml \
+            --out out/ci/report_sample.json
+          python -m fxbot.cli report-export \
+            --in out/ci/report_sample.json \
+            --out-dir out/ci/report_sample_csv
+      - name: Upload sample artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: fx-sample
+          path: out/ci
+
+  changelog_lite:
+    name: Changelog (latest merged PR)
+    if: >-
+      ${!!(github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.force == true))}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Generate changelog for latest merged PR
+        id: gen
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const sha = context.sha;
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            // Find PR associated with this push HEAD commit
+            const prs = await github.rest.repos.listPullRequestsAssociatedWithCommit({ owner, repo, commit_sha: sha });
+            if (!prs.data || prs.data.length === 0) {
+              core.notice('No PR associated with this commit. Skipping changelog.');
+              return;
+            }
+            // Prefer the first associated PR
+            const pr = prs.data[0];
+            // Fetch labels and author
+            const labels = (pr.labels || []).map(l => typeof l === 'string' ? l : l.name).filter(Boolean);
+            const author = pr.user?.login || 'unknown';
+            const body = (pr.body || '').trim();
+            // Build lite changelog entry
+            const lines = [];
+            lines.push(`# Changelog (Latest Merged PR)`);
+            lines.push('');
+            lines.push(`- PR: #${pr.number} ${pr.title}`);
+            lines.push(`- Author: @${author}`);
+            lines.push(`- Merged: ${pr.merged_at || 'unknown'}`);
+            if (labels.length) lines.push(`- Labels: ${labels.join(', ')}`);
+            lines.push('');
+            if (body) {
+              // Include only the first 30 lines of body to keep it light
+              const snippet = body.split('\n').slice(0, 30).join('\n');
+              lines.push('## Notes');
+              lines.push('');
+              lines.push(snippet);
+              if (body.split('\n').length > 30) {
+                lines.push('');
+                lines.push('...');
+              }
+            }
+            const content = lines.join('\n');
+            await core.summary.addRaw(content).write();
+            const fs = require('fs');
+            fs.mkdirSync('out', { recursive: true });
+            fs.writeFileSync('out/CHANGELOG_LITE.md', content);
+            core.setOutput('path', 'out/CHANGELOG_LITE.md');
+      - name: Upload changelog artifact
+        if: steps.gen.outputs.path
+        uses: actions/upload-artifact@v4
+        with:
+          name: changelog-lite
+          path: ${{ steps.gen.outputs.path }}
